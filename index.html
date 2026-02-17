@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyLine – Flight Simulator</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <h1>SkyLine</h1>
+      <p class="loading-subtitle">Flight Simulator</p>
+      <div class="loading-bar-container">
+        <div class="loading-bar" id="loading-bar"></div>
+      </div>
+      <p class="loading-text" id="loading-text">Initialisiere...</p>
+    </div>
+  </div>
+
+  <!-- Main Menu -->
+  <div id="main-menu" class="hidden">
+    <div class="menu-background"></div>
+    <div class="menu-content">
+      <h1 class="menu-title">SkyLine</h1>
+      <p class="menu-subtitle" data-i18n="menu.subtitle">Flight Simulator</p>
+      <div class="menu-buttons">
+        <button class="menu-btn" id="btn-free-flight" data-i18n="menu.freeFlight">Freier Flug</button>
+        <button class="menu-btn" id="btn-missions" data-i18n="menu.missions">Missionen</button>
+        <button class="menu-btn" id="btn-challenges" data-i18n="menu.challenges">Challenges</button>
+        <button class="menu-btn" id="btn-settings" data-i18n="menu.settings">Einstellungen</button>
+      </div>
+      <div class="menu-footer">
+        <select id="language-select">
+          <option value="de">Deutsch</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aircraft Selection -->
+  <div id="aircraft-select" class="hidden">
+    <div class="panel-overlay">
+      <div class="panel">
+        <h2 data-i18n="aircraft.title">Flugzeugauswahl</h2>
+        <div class="aircraft-grid" id="aircraft-grid"></div>
+        <div class="aircraft-specs" id="aircraft-specs"></div>
+        <div class="panel-actions">
+          <button class="btn-secondary" id="btn-aircraft-back" data-i18n="common.back">Zurück</button>
+          <button class="btn-primary" id="btn-aircraft-confirm" data-i18n="common.start">Starten</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission Selection -->
+  <div id="mission-select" class="hidden">
+    <div class="panel-overlay">
+      <div class="panel">
+        <h2 data-i18n="missions.title">Missionen</h2>
+        <div class="mission-list" id="mission-list"></div>
+        <div class="panel-actions">
+          <button class="btn-secondary" id="btn-mission-back" data-i18n="common.back">Zurück</button>
+          <button class="btn-primary" id="btn-mission-start" data-i18n="common.start">Starten</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div id="settings-panel" class="hidden">
+    <div class="panel-overlay">
+      <div class="panel panel-wide">
+        <h2 data-i18n="settings.title">Einstellungen</h2>
+        <div class="settings-tabs">
+          <button class="tab-btn active" data-tab="graphics" data-i18n="settings.graphics">Grafik</button>
+          <button class="tab-btn" data-tab="controls" data-i18n="settings.controls">Steuerung</button>
+          <button class="tab-btn" data-tab="audio" data-i18n="settings.audio">Audio</button>
+          <button class="tab-btn" data-tab="gameplay" data-i18n="settings.gameplay">Gameplay</button>
+        </div>
+        <div class="settings-content" id="settings-content"></div>
+        <div class="panel-actions">
+          <button class="btn-secondary" id="btn-settings-back" data-i18n="common.back">Zurück</button>
+          <button class="btn-primary" id="btn-settings-save" data-i18n="settings.save">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-top">
+      <div class="hud-speed">
+        <span class="hud-label" data-i18n="hud.speed">SPD</span>
+        <span class="hud-value" id="hud-speed">0</span>
+        <span class="hud-unit">kt</span>
+      </div>
+      <div class="hud-heading">
+        <span class="hud-label" data-i18n="hud.heading">HDG</span>
+        <span class="hud-value" id="hud-heading">000</span>
+        <span class="hud-unit">°</span>
+      </div>
+      <div class="hud-altitude">
+        <span class="hud-label" data-i18n="hud.altitude">ALT</span>
+        <span class="hud-value" id="hud-altitude">0</span>
+        <span class="hud-unit">ft</span>
+      </div>
+    </div>
+    <div class="hud-bottom">
+      <div class="hud-vspeed">
+        <span class="hud-label" data-i18n="hud.vspeed">VS</span>
+        <span class="hud-value" id="hud-vspeed">0</span>
+        <span class="hud-unit">fpm</span>
+      </div>
+      <div class="hud-throttle">
+        <span class="hud-label" data-i18n="hud.throttle">THR</span>
+        <div class="throttle-bar">
+          <div class="throttle-fill" id="hud-throttle"></div>
+        </div>
+      </div>
+      <div class="hud-gear">
+        <span class="hud-label" data-i18n="hud.gear">GEAR</span>
+        <span class="hud-value" id="hud-gear">DOWN</span>
+      </div>
+      <div class="hud-flaps">
+        <span class="hud-label" data-i18n="hud.flaps">FLAPS</span>
+        <span class="hud-value" id="hud-flaps">0</span>
+      </div>
+    </div>
+    <div class="hud-left">
+      <canvas id="attitude-indicator" width="200" height="200"></canvas>
+    </div>
+    <div class="hud-right">
+      <canvas id="compass-indicator" width="160" height="160"></canvas>
+      <canvas id="altimeter-indicator" width="160" height="160"></canvas>
+      <canvas id="vsi-indicator" width="160" height="160"></canvas>
+    </div>
+    <div class="hud-center" id="hud-center"></div>
+    <div class="hud-warnings" id="hud-warnings"></div>
+    <div class="hud-camera-info">
+      <span id="camera-mode-label">Cockpit</span>
+    </div>
+    <div class="hud-controls-hint" id="controls-hint">
+      <span data-i18n="hud.controlsHint">WASD: Steuerung | Shift/Ctrl: Schub | C: Kamera | G: Fahrwerk | F: Klappen | P: Pause</span>
+    </div>
+  </div>
+
+  <!-- Mission HUD -->
+  <div id="mission-hud" class="hidden">
+    <div class="mission-objective" id="mission-objective"></div>
+    <div class="mission-timer" id="mission-timer"></div>
+    <div class="mission-score" id="mission-score"></div>
+  </div>
+
+  <!-- Pause Menu -->
+  <div id="pause-menu" class="hidden">
+    <div class="panel-overlay">
+      <div class="panel">
+        <h2 data-i18n="pause.title">Pause</h2>
+        <div class="menu-buttons">
+          <button class="menu-btn" id="btn-resume" data-i18n="pause.resume">Fortsetzen</button>
+          <button class="menu-btn" id="btn-restart" data-i18n="pause.restart">Neustart</button>
+          <button class="menu-btn" id="btn-quit" data-i18n="pause.quit">Hauptmenü</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission Complete -->
+  <div id="mission-complete" class="hidden">
+    <div class="panel-overlay">
+      <div class="panel">
+        <h2 data-i18n="mission.complete">Mission abgeschlossen!</h2>
+        <div class="mission-results" id="mission-results"></div>
+        <div class="panel-actions">
+          <button class="btn-secondary" id="btn-mission-menu" data-i18n="common.back">Hauptmenü</button>
+          <button class="btn-primary" id="btn-mission-retry" data-i18n="mission.retry">Nochmal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stall Warning -->
+  <div id="stall-warning" class="hidden">
+    <div class="stall-text">STALL</div>
+  </div>
+
+  <!-- 3D Canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
