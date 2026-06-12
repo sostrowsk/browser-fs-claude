@@ -139,10 +139,10 @@ export class PhysicsEngine {
     const cosP = Math.cos(s.pitch), sinP = Math.sin(s.pitch);
     const cosR = Math.cos(s.roll), sinR = Math.sin(s.roll);
 
-    // Forward velocity component (body frame)
-    const vForward = s.vx * sinY + s.vz * cosY;
+    // Forward velocity component (body frame) — model faces +X at yaw=0
+    const vForward = s.vx * cosY + s.vz * sinY;
     const vUp = s.vy;
-    const vSide = s.vx * cosY - s.vz * sinY;
+    const vSide = -s.vx * sinY + s.vz * cosY;
 
     const speed = Math.sqrt(vForward * vForward + vUp * vUp + vSide * vSide);
 
@@ -228,9 +228,10 @@ export class PhysicsEngine {
     s.pitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, s.pitch));
 
     // === Convert forces to world frame and update velocity ===
-    const ax = (fx * sinY + fz * cosY) / ac.mass;
+    // Model faces +X at yaw=0, so forward=(cosY,0,sinY), right=(-sinY,0,cosY)
+    const ax = (fx * cosY - fz * sinY) / ac.mass;
     const ay = fy / ac.mass;
-    const az = (fx * cosY - fz * sinY) / ac.mass;
+    const az = (fx * sinY + fz * cosY) / ac.mass;
 
     // Wind
     const windFactor = 0.1;
